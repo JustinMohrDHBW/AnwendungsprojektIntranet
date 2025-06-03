@@ -21,6 +21,7 @@ const pool = new Pool({
 const authRoutes = require('./routes/auth');
 const blogRoutes = require('./routes/blog');
 const fileRoutes = require('./routes/files');
+const usersRoutes = require('./routes/users');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -89,6 +90,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/auth', authRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/files', fileRoutes);
+app.use('/users', usersRoutes);
 
 // Test endpoint
 app.get('/', (req, res) => {

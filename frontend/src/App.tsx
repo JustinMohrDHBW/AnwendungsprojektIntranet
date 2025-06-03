@@ -4,6 +4,7 @@ import NavBar from './components/NavBar';
 import IntraConnect from './pages/IntraConnect';
 import Blog from './pages/Blog';
 import Files from './pages/Files';
+import AdminPanel from './pages/AdminPanel';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -17,7 +18,7 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
     return <Navigate to="/" replace />;
   }
 
-  if (requireAdmin && currentUser?.role !== 'admin') {
+  if (requireAdmin && currentUser?.role !== 'ADMIN') {
     return <Navigate to="/" replace />;
   }
 
@@ -45,6 +46,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Files />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminPanel />
                 </ProtectedRoute>
               }
             />

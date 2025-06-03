@@ -60,6 +60,11 @@ const NavBar = () => {
             <Link to="/files" className={linkClasses("/files")}>
               Dateien
             </Link>
+            {currentUser?.role === 'ADMIN' && (
+              <Link to="/admin" className={linkClasses("/admin")}>
+                Admin Panel
+              </Link>
+            )}
             {isLoggedIn ? (
               <>
                 <div className="flex items-center space-x-2 px-3 py-2">
@@ -150,6 +155,11 @@ const NavBar = () => {
           >
             Dateien
           </Link>
+          {currentUser?.role === 'ADMIN' && (
+            <Link to="/admin" className={linkClasses("/admin")}>
+              Admin Panel
+            </Link>
+          )}
           {isLoggedIn ? (
             <>
               <div className="flex items-center space-x-2 px-3 py-2">
