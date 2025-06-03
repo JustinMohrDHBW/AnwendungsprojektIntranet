@@ -6,8 +6,18 @@ const api = axios.create({
   withCredentials: true,
 });
 
-export const getEmployees = async (): Promise<User[]> => {
-  const response = await api.get('/employees');
+export interface Employee {
+  id: string | number;
+  personalnummer: string;
+  name: string;
+  position: string;
+  department: string;
+  email: string;
+  phone: string;
+}
+
+export const getEmployees = async (): Promise<Employee[]> => {
+  const response = await api.get('/api/employees');
   return response.data;
 };
 
@@ -23,9 +33,9 @@ export const updateEmployee = async (id: string, data: Partial<User>): Promise<U
 
 export const searchEmployees = async (query: {
   name?: string;
-  abteilung?: string;
+  department?: string;
   personalnummer?: string;
-}): Promise<User[]> => {
-  const response = await api.get('/employees/search', { params: query });
+}): Promise<Employee[]> => {
+  const response = await api.get('/api/employees/search', { params: query });
   return response.data;
 }; 

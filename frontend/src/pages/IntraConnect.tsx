@@ -1,51 +1,32 @@
-import React, { useState, useMemo } from 'react';
-
-interface Employee {
-  id: number;
-  personalnummer: string;
-  name: string;
-  position: string;
-  department: string;
-  email: string;
-  phone: string;
-}
+import React, { useState, useMemo, useEffect } from 'react';
+import * as employeesApi from '../api/employees';
+import type { Employee } from '../api/employees';
 
 const IntraConnect: React.FC = () => {
   // Search states
   const [searchPersonalnummer, setSearchPersonalnummer] = useState('');
   const [searchDepartment, setSearchDepartment] = useState('');
   const [searchName, setSearchName] = useState('');
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // This would typically come from an API
-  const employees: Employee[] = [
-    {
-      id: 1,
-      personalnummer: "EMP001",
-      name: "John Doe",
-      position: "Software Engineer",
-      department: "Engineering",
-      email: "john.doe@company.com",
-      phone: "+49 123 456789"
-    },
-    {
-      id: 2,
-      personalnummer: "EMP002",
-      name: "Jane Smith",
-      position: "Product Manager",
-      department: "Product",
-      email: "jane.smith@company.com",
-      phone: "+49 123 456790"
-    },
-    {
-      id: 3,
-      personalnummer: "EMP003",
-      name: "Max Mustermann",
-      position: "Marketing Specialist",
-      department: "Marketing",
-      email: "max.mustermann@company.com",
-      phone: "+49 123 456791"
-    }
-  ];
+  // Fetch employees data
+  useEffect(() => {
+    const loadEmployees = async () => {
+      try {
+        const data = await employeesApi.getEmployees();
+        setEmployees(data);
+      } catch (err) {
+        setError('Failed to load employees');
+        console.error('Error loading employees:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadEmployees();
+  }, []);
 
   // Get unique departments for the dropdown
   const departments = useMemo(() => {
@@ -66,9 +47,23 @@ const IntraConnect: React.FC = () => {
     });
   }, [employees, searchPersonalnummer, searchDepartment, searchName]);
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Employee Directory</h1>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
 
       {/* Search Section */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -127,7 +122,7 @@ const IntraConnect: React.FC = () => {
 
       {/* Employee Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredEmployees.map((employee) => (
+        {filteredEmployees.map(employee => (
           <div 
             key={employee.id}
             className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"

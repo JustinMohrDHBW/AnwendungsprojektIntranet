@@ -22,6 +22,7 @@ const authRoutes = require('./routes/auth');
 const blogRoutes = require('./routes/blog');
 const fileRoutes = require('./routes/files');
 const usersRoutes = require('./routes/users');
+const employeesRoutes = require('./routes/employees');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -91,6 +92,7 @@ app.use('/auth', authRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/users', usersRoutes);
+app.use('/api/employees', employeesRoutes);
 
 // Test endpoint
 app.get('/', (req, res) => {
