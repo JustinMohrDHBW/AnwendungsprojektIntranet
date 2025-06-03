@@ -192,7 +192,7 @@ const Blog: React.FC = () => {
                 <span>{new Date(post.createdAt).toLocaleDateString()}</span>
               </div>
               
-              {currentUser && (currentUser.id === post.authorId || currentUser.role === 'admin') && (
+              {currentUser && (currentUser.id === post.authorId || currentUser.role === 'ADMIN') && (
                 <button
                   onClick={() => handleDeletePost(post.id)}
                   className="text-red-500 hover:text-red-700"

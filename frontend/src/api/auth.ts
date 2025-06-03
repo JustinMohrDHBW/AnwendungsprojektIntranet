@@ -5,7 +5,7 @@ export interface User {
   username: string;
   firstName: string;
   lastName: string;
-  role: 'admin' | 'user';
+  role: 'ADMIN' | 'USER';
   employeeData?: {
     personalnummer: string;
     name: string;
@@ -22,11 +22,63 @@ export const generateDefaultCredentials = (firstName: string, lastName: string) 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001',
   withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest'
+  }
 });
 
+// Add request interceptor for debugging
+api.interceptors.request.use(
+  (config) => {
+    console.log('API Request:', {
+      url: config.url,
+      method: config.method,
+      headers: config.headers,
+      data: config.data
+    });
+    return config;
+  },
+  (error) => {
+    console.error('API Request Error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor for error logging
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      console.error('API Error Response:', {
+        status: error.response.status,
+        data: error.response.data,
+        headers: error.response.headers,
+      });
+    } else if (error.request) {
+      console.error('API Request Error:', error.request);
+    } else {
+      console.error('API Error:', error.message);
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const login = async (username: string, password: string): Promise<User> => {
-  const response = await api.post('/auth/login', { username, password });
-  return response.data;
+  try {
+    console.log('Login attempt:', { username });
+    const response = await api.post('/auth/login', { username, password });
+    
+    if (response.status === 401) {
+      throw new Error('Invalid credentials');
+    }
+    
+    console.log('Login successful:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Login failed:', error);
+    throw error;
+  }
 };
 
 export const logout = async (): Promise<void> => {
@@ -38,6 +90,7 @@ export const getCurrentUser = async (): Promise<User | null> => {
     const response = await api.get('/auth/me');
     return response.data;
   } catch (error) {
+    console.error('Failed to get current user:', error);
     return null;
   }
 };

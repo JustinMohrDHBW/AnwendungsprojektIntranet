@@ -10,6 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Session {
+  id        String   @id @map("sid")
+  data      Json     @map("sess")
+  expiresAt DateTime @map("expire")
+
+  @@map("session")
+}
+
 enum Role {
   USER
   ADMIN
