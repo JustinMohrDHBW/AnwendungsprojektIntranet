@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoginModal from './LoginModal';
 import Avatar from './Avatar';
@@ -8,6 +8,7 @@ const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { isLoggedIn, currentUser, logout } = useAuth();
+  const location = useLocation();
 
   const getNameParts = () => {
     if (!currentUser?.username) return { firstName: '', lastName: '' };
@@ -27,6 +28,19 @@ const NavBar = () => {
 
   const { firstName, lastName } = getNameParts();
 
+  const isActivePath = (path: string) => {
+    return location.pathname === path;
+  };
+
+  const linkClasses = (path: string) => {
+    const baseClasses = "px-3 py-2 rounded-md transition-colors";
+    return `${baseClasses} ${
+      isActivePath(path)
+        ? "bg-gray-700 text-white"
+        : "hover:bg-gray-700 text-gray-300 hover:text-white"
+    }`;
+  };
+
   return (
     <nav className="bg-gray-800 text-white">
       <div className="max-w-7xl mx-auto px-4">
@@ -37,13 +51,13 @@ const NavBar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/" className="hover:bg-gray-700 px-3 py-2 rounded-md">
+            <Link to="/" className={linkClasses("/")}>
               IntraConnect
             </Link>
-            <Link to="/blog" className="hover:bg-gray-700 px-3 py-2 rounded-md">
+            <Link to="/blog" className={linkClasses("/blog")}>
               Blog
             </Link>
-            <Link to="/files" className="hover:bg-gray-700 px-3 py-2 rounded-md">
+            <Link to="/files" className={linkClasses("/files")}>
               Dateien
             </Link>
             {isLoggedIn ? (
@@ -56,7 +70,7 @@ const NavBar = () => {
                   />
                   <span className="text-gray-300">
                     {firstName} {lastName}
-                    {currentUser?.role === 'admin' && (
+                    {currentUser?.role === 'ADMIN' && (
                       <span className="ml-2 text-xs bg-red-500 px-2 py-1 rounded">Admin</span>
                     )}
                   </span>
@@ -120,19 +134,19 @@ const NavBar = () => {
         <div className="px-2 pt-2 pb-3 space-y-1">
           <Link
             to="/"
-            className="block px-3 py-2 rounded-md hover:bg-gray-700"
+            className={linkClasses("/")}
           >
             IntraConnect
           </Link>
           <Link
             to="/blog"
-            className="block px-3 py-2 rounded-md hover:bg-gray-700"
+            className={linkClasses("/blog")}
           >
             Blog
           </Link>
           <Link
             to="/files"
-            className="block px-3 py-2 rounded-md hover:bg-gray-700"
+            className={linkClasses("/files")}
           >
             Dateien
           </Link>
@@ -146,7 +160,7 @@ const NavBar = () => {
                 />
                 <span className="text-gray-300">
                   {firstName} {lastName}
-                  {currentUser?.role === 'admin' && (
+                  {currentUser?.role === 'ADMIN' && (
                     <span className="ml-2 text-xs bg-red-500 px-2 py-1 rounded">Admin</span>
                   )}
                 </span>
