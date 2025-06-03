@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: intranet_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: intranet_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  express_api:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: intranet_api
+    environment:
+      DATABASE_URL: "postgresql://admin:password123@postgres:5432/intranet_db?schema=public"
+      NODE_ENV: development
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    command: sh -c "npx prisma migrate deploy && npx prisma db seed && npm run dev"
+
+  react_app:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: intranet_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:3001
+    depends_on:
+      - express_api
+
+volumes:
+  postgres_data:
+
+networks:
+  app_network:
+    driver: bridge 
