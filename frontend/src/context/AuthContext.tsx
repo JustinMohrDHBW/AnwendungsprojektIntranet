@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react';
 import * as authApi from '../api/auth';
 import type { User } from '../api/auth';
 
@@ -19,10 +19,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const initCalled = useRef(false);
 
   // Load initial state from localStorage and verify with server
   useEffect(() => {
     const initAuth = async () => {
+      // Prevent duplicate calls in development
+      if (initCalled.current) return;
+      initCalled.current = true;
+
       try {
         // First check localStorage
         const storedAuth = localStorage.getItem(STORAGE_KEY);
@@ -86,7 +91,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const hasPermission = (userId: string): boolean => {
     if (!currentUser) return false;
-    if (currentUser.role === 'admin') return true;
+    if (currentUser.role === 'ADMIN') return true;
     return currentUser.id === userId;
   };
 

@@ -49,12 +49,15 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Only log unexpected errors
     if (error.response) {
-      console.error('API Error Response:', {
-        status: error.response.status,
-        data: error.response.data,
-        headers: error.response.headers,
-      });
+      if (error.response.status !== 401) {
+        console.error('API Error Response:', {
+          status: error.response.status,
+          data: error.response.data,
+          headers: error.response.headers,
+        });
+      }
     } else if (error.request) {
       console.error('API Request Error:', error.request);
     } else {
@@ -89,8 +92,11 @@ export const getCurrentUser = async (): Promise<User | null> => {
   try {
     const response = await api.get('/auth/me');
     return response.data;
-  } catch (error) {
-    console.error('Failed to get current user:', error);
+  } catch (error: any) {
+    // Don't log errors for expected unauthorized states
+    if (error?.response?.status !== 401) {
+      console.error('Failed to get current user:', error);
+    }
     return null;
   }
 };
