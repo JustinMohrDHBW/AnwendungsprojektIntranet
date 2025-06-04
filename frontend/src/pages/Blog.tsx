@@ -16,6 +16,7 @@ const Blog: React.FC = () => {
     tags: ''
   });
   const [newComments, setNewComments] = useState<{ [key: string]: string }>({});
+  const [expandedComments, setExpandedComments] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     loadPosts();
@@ -252,58 +253,87 @@ const Blog: React.FC = () => {
 
             {/* Comments Section */}
             <div className="border-t pt-4">
-              <h3 className="text-lg font-semibold mb-4">Comments</h3>
+              <div 
+                className="flex items-center justify-between cursor-pointer mb-4"
+                onClick={() => setExpandedComments(prev => ({
+                  ...prev,
+                  [post.id]: !prev[post.id]
+                }))}
+              >
+                <h3 className="text-lg font-semibold">
+                  Comments {post.comments?.length ? `(${post.comments.length})` : ''}
+                </h3>
+                <svg
+                  className={`w-5 h-5 text-gray-500 transform transition-transform ${
+                    expandedComments[post.id] ? 'rotate-180' : ''
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
               
-              {/* Comment Form */}
-              {currentUser && (
-                <div className="mb-6">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={newComments[post.id] || ''}
-                      onChange={e => setNewComments(prev => ({ ...prev, [post.id]: e.target.value }))}
-                      placeholder="Write a comment..."
-                      className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button
-                      onClick={() => handleCreateComment(post.id)}
-                      disabled={!newComments[post.id]}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Comment
-                    </button>
-                  </div>
-                </div>
-              )}
+              {expandedComments[post.id] && (
+                <>
+                  {/* Comment Form */}
+                  {currentUser && (
+                    <div className="mb-6">
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={newComments[post.id] || ''}
+                          onChange={e => setNewComments(prev => ({ ...prev, [post.id]: e.target.value }))}
+                          placeholder="Write a comment..."
+                          className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button
+                          onClick={() => handleCreateComment(post.id)}
+                          disabled={!newComments[post.id]}
+                          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Comment
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
-              {/* Comments List */}
-              <div className="space-y-4">
-                {post.comments?.map(comment => (
-                  <div key={comment.id} className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <p className="text-gray-800 mb-2">{comment.content}</p>
-                        <div className="text-sm text-gray-500">
-                          <span>{comment.author.firstName} {comment.author.lastName}</span>
-                          <span className="mx-2">•</span>
-                          <span>{new Date(comment.createdAt).toLocaleDateString()}</span>
+                  {/* Comments List */}
+                  <div className="space-y-4">
+                    {post.comments?.map(comment => (
+                      <div key={comment.id} className="bg-gray-50 rounded-lg p-4">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <p className="text-gray-800 mb-2">{comment.content}</p>
+                            <div className="text-sm text-gray-500">
+                              <span>{comment.author.firstName} {comment.author.lastName}</span>
+                              <span className="mx-2">•</span>
+                              <span>{new Date(comment.createdAt).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                          {currentUser && (currentUser.id === comment.authorId || currentUser.role === 'ADMIN') && (
+                            <button
+                              onClick={() => handleDeleteComment(post.id, comment.id)}
+                              className="text-red-500 hover:text-red-700 text-sm ml-4"
+                            >
+                              Delete
+                            </button>
+                          )}
                         </div>
                       </div>
-                      {currentUser && (currentUser.id === comment.authorId || currentUser.role === 'ADMIN') && (
-                        <button
-                          onClick={() => handleDeleteComment(post.id, comment.id)}
-                          className="text-red-500 hover:text-red-700 text-sm ml-4"
-                        >
-                          Delete
-                        </button>
-                      )}
-                    </div>
+                    ))}
+                    {!post.comments?.length && (
+                      <p className="text-gray-500 text-center py-4">No comments yet</p>
+                    )}
                   </div>
-                ))}
-                {!post.comments?.length && (
-                  <p className="text-gray-500 text-center py-4">No comments yet</p>
-                )}
-              </div>
+                </>
+              )}
             </div>
           </article>
         ))}
