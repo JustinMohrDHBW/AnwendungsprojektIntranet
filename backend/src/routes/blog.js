@@ -16,6 +16,21 @@ router.get('/posts', async (req, res) => {
             firstName: true,
             lastName: true,
           }
+        },
+        comments: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
         }
       },
       orderBy: {
@@ -76,6 +91,21 @@ router.get('/posts/:id', async (req, res) => {
             firstName: true,
             lastName: true,
           }
+        },
+        comments: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
         }
       }
     });
@@ -127,6 +157,21 @@ router.put('/posts/:id', async (req, res) => {
             firstName: true,
             lastName: true,
           }
+        },
+        comments: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
         }
       }
     });
@@ -173,6 +218,80 @@ router.delete('/posts/:id', async (req, res) => {
     res.status(204).send();
   } catch (err) {
     console.error('Error deleting blog post:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create a comment
+router.post('/posts/:id/comments', async (req, res) => {
+  const { content, authorId } = req.body;
+  const postId = req.params.id;
+
+  try {
+    const comment = await prisma.comment.create({
+      data: {
+        content,
+        author: {
+          connect: { id: authorId }
+        },
+        post: {
+          connect: { id: postId }
+        }
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+          }
+        }
+      }
+    });
+    res.status(201).json(comment);
+  } catch (err) {
+    console.error('Error creating comment:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete a comment
+router.delete('/comments/:id', async (req, res) => {
+  const { authorId } = req.body;
+
+  try {
+    // First get the user to check if they're an admin
+    const user = await prisma.user.findUnique({
+      where: { id: authorId },
+      select: { role: true }
+    });
+
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
+    }
+
+    // Get the comment
+    const comment = await prisma.comment.findUnique({
+      where: { id: req.params.id },
+      select: { authorId: true }
+    });
+
+    if (!comment) {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    // Allow deletion if user is admin or the author of the comment
+    if (user.role !== 'ADMIN' && comment.authorId !== authorId) {
+      return res.status(403).json({ error: 'Not authorized to delete this comment' });
+    }
+
+    await prisma.comment.delete({
+      where: { id: req.params.id }
+    });
+    res.status(204).send();
+  } catch (err) {
+    console.error('Error deleting comment:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

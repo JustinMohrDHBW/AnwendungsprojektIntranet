@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as blogApi from '../api/blog';
-import type { BlogPost } from '../api/blog';
+import type { BlogPost, Comment } from '../api/blog';
 
 const Blog: React.FC = () => {
   const { currentUser } = useAuth();
@@ -15,6 +15,7 @@ const Blog: React.FC = () => {
     category: '',
     tags: ''
   });
+  const [newComments, setNewComments] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     loadPosts();
@@ -63,6 +64,53 @@ const Blog: React.FC = () => {
     } catch (err) {
       setError('Failed to delete blog post');
       console.error('Error deleting post:', err);
+    }
+  };
+
+  const handleCreateComment = async (postId: string) => {
+    if (!currentUser || !newComments[postId]) return;
+
+    try {
+      const comment = await blogApi.createComment(postId, {
+        content: newComments[postId],
+        authorId: currentUser.id
+      });
+      
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            comments: [comment, ...(post.comments || [])]
+          };
+        }
+        return post;
+      }));
+      
+      // Clear the comment input
+      setNewComments(prev => ({ ...prev, [postId]: '' }));
+    } catch (err) {
+      setError('Failed to create comment');
+      console.error('Error creating comment:', err);
+    }
+  };
+
+  const handleDeleteComment = async (postId: string, commentId: string) => {
+    if (!currentUser) return;
+
+    try {
+      await blogApi.deleteComment(commentId, currentUser.id);
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            comments: post.comments?.filter(comment => comment.id !== commentId) || []
+          };
+        }
+        return post;
+      }));
+    } catch (err) {
+      setError('Failed to delete comment');
+      console.error('Error deleting comment:', err);
     }
   };
 
@@ -186,7 +234,7 @@ const Blog: React.FC = () => {
               ))}
             </div>
             
-            <div className="flex items-center justify-between text-sm text-gray-500">
+            <div className="flex items-center justify-between text-sm text-gray-500 mb-6">
               <div className="flex items-center space-x-4">
                 <span>By {post.author.firstName} {post.author.lastName}</span>
                 <span>{new Date(post.createdAt).toLocaleDateString()}</span>
@@ -200,6 +248,62 @@ const Blog: React.FC = () => {
                   Delete
                 </button>
               )}
+            </div>
+
+            {/* Comments Section */}
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-semibold mb-4">Comments</h3>
+              
+              {/* Comment Form */}
+              {currentUser && (
+                <div className="mb-6">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newComments[post.id] || ''}
+                      onChange={e => setNewComments(prev => ({ ...prev, [post.id]: e.target.value }))}
+                      placeholder="Write a comment..."
+                      className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      onClick={() => handleCreateComment(post.id)}
+                      disabled={!newComments[post.id]}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Comment
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Comments List */}
+              <div className="space-y-4">
+                {post.comments?.map(comment => (
+                  <div key={comment.id} className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <p className="text-gray-800 mb-2">{comment.content}</p>
+                        <div className="text-sm text-gray-500">
+                          <span>{comment.author.firstName} {comment.author.lastName}</span>
+                          <span className="mx-2">•</span>
+                          <span>{new Date(comment.createdAt).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                      {currentUser && (currentUser.id === comment.authorId || currentUser.role === 'ADMIN') && (
+                        <button
+                          onClick={() => handleDeleteComment(post.id, comment.id)}
+                          className="text-red-500 hover:text-red-700 text-sm ml-4"
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {!post.comments?.length && (
+                  <p className="text-gray-500 text-center py-4">No comments yet</p>
+                )}
+              </div>
             </div>
           </article>
         ))}
