@@ -6,6 +6,8 @@ export interface User {
   firstName: string;
   lastName: string;
   role: 'ADMIN' | 'USER';
+  personalnummer?: string;
+  abteilung?: string;
   employeeData?: {
     personalnummer: string;
     name: string;
