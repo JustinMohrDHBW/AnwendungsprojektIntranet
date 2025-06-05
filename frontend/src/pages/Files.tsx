@@ -241,64 +241,72 @@ const Files: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {files.map(file => (
-          <div
-            key={file.id}
-            className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h2 className="text-xl font-semibold mb-2">{file.name}</h2>
-                {file.description && (
-                  <p className="text-gray-600 mb-2">{file.description}</p>
-                )}
-                <p className="text-sm text-gray-500">Size: {formatFileSize(file.size)}</p>
-              </div>
-              {file.category && (
-                <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded">
-                  {file.category}
-                </span>
-              )}
-            </div>
-
-            {file.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {file.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <div className="flex items-center justify-between text-sm text-gray-500">
-              <div className="flex items-center space-x-4">
-                <span>By {file.uploader.firstName} {file.uploader.lastName}</span>
-                <span>{new Date(file.createdAt).toLocaleDateString()}</span>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-2 mt-4">
-              <button
-                onClick={() => handleDownload(file)}
-                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition-colors"
-              >
-                Download
-              </button>
-              {currentUser && (currentUser.id === file.uploaderId || currentUser.role === 'ADMIN') && (
-                <button
-                  onClick={() => handleDelete(file.id)}
-                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
-                >
-                  Delete
-                </button>
-              )}
-            </div>
+        {files.length === 0 ? (
+          <div className="col-span-full text-center py-12 bg-white rounded-lg shadow-md">
+            <div className="text-gray-400 text-6xl mb-4">📁</div>
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">No Files Available</h3>
+            <p className="text-gray-500">Upload your first file to start sharing resources with your team!</p>
           </div>
-        ))}
+        ) : (
+          files.map(file => (
+            <div
+              key={file.id}
+              className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h2 className="text-xl font-semibold mb-2">{file.name}</h2>
+                  {file.description && (
+                    <p className="text-gray-600 mb-2">{file.description}</p>
+                  )}
+                  <p className="text-sm text-gray-500">Size: {formatFileSize(file.size)}</p>
+                </div>
+                {file.category && (
+                  <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded">
+                    {file.category}
+                  </span>
+                )}
+              </div>
+
+              {file.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {file.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between text-sm text-gray-500">
+                <div className="flex items-center space-x-4">
+                  <span>By {file.uploader.firstName} {file.uploader.lastName}</span>
+                  <span>{new Date(file.createdAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-2 mt-4">
+                <button
+                  onClick={() => handleDownload(file)}
+                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition-colors"
+                >
+                  Download
+                </button>
+                {currentUser && (currentUser.id === file.uploaderId || currentUser.role === 'ADMIN') && (
+                  <button
+                    onClick={() => handleDelete(file.id)}
+                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
