@@ -28,6 +28,8 @@ const IntraConnect: React.FC = () => {
       const success = await login(username, password);
       if (!success) {
         setLoginError('Invalid username or password');
+      } else {
+        navigate('/');
       }
     } catch (err) {
       setLoginError('An error occurred during login');
@@ -37,14 +39,8 @@ const IntraConnect: React.FC = () => {
   };
 
   useEffect(() => {
-    // Redirect to homepage if already logged in
-    if (isLoggedIn) {
-      navigate('/');
-      return;
-    }
-
     loadEmployees();
-  }, [isLoggedIn, navigate]);
+  }, []);
 
   const loadEmployees = async () => {
     try {
