@@ -6,6 +6,8 @@ import IntraConnect from './pages/IntraConnect';
 import Blog from './pages/Blog';
 import Files from './pages/Files';
 import AdminPanel from './pages/AdminPanel';
+import DepartmentsOverview from './pages/departments/DepartmentsOverview';
+import DepartmentPage from './pages/departments/DepartmentPage';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -69,6 +71,22 @@ function App() {
               element={
                 <ProtectedRoute requireAdmin>
                   <AdminPanel />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/departments"
+              element={
+                <ProtectedRoute>
+                  <DepartmentsOverview />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/departments/:departmentId"
+              element={
+                <ProtectedRoute>
+                  <DepartmentPage />
                 </ProtectedRoute>
               }
             />

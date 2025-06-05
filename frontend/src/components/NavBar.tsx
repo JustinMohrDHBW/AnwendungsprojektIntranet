@@ -56,6 +56,9 @@ const NavBar = () => {
                 <Link to="/" className={linkClasses("/")}>
                   Home
                 </Link>
+                <Link to="/departments" className={linkClasses("/departments")}>
+                  Departments
+                </Link>
                 <Link to="/intraconnect" className={linkClasses("/intraconnect")}>
                   IntraConnect
                 </Link>
@@ -148,6 +151,12 @@ const NavBar = () => {
               className={linkClasses("/")}
             >
               Home
+            </Link>
+            <Link
+              to="/departments"
+              className={linkClasses("/departments")}
+            >
+              Departments
             </Link>
             <Link
               to="/intraconnect"
