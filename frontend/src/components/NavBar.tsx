@@ -10,24 +10,6 @@ const NavBar = () => {
   const { isLoggedIn, currentUser, logout } = useAuth();
   const location = useLocation();
 
-  const getNameParts = () => {
-    if (!currentUser?.username) return { firstName: '', lastName: '' };
-    
-    // Handle special case for admin
-    if (currentUser.username === 'admin') {
-      return { firstName: 'Justin', lastName: 'Mohr' };
-    }
-
-    const parts = currentUser.username.split('-');
-    // Capitalize first letter of each part
-    const firstName = parts[0] ? parts[0].charAt(0).toUpperCase() + parts[0].slice(1) : '';
-    const lastName = parts[1] ? parts[1].charAt(0).toUpperCase() + parts[1].slice(1) : '';
-    
-    return { firstName, lastName };
-  };
-
-  const { firstName, lastName } = getNameParts();
-
   const isActivePath = (path: string) => {
     return location.pathname === path;
   };
@@ -75,12 +57,12 @@ const NavBar = () => {
                 )}
                 <div className="flex items-center space-x-2 px-3 py-2">
                   <Avatar 
-                    firstName={firstName}
-                    lastName={lastName}
+                    firstName={currentUser?.firstName || ''}
+                    lastName={currentUser?.lastName || ''}
                     size="sm"
                   />
                   <span className="text-gray-300">
-                    {firstName} {lastName}
+                    {currentUser?.firstName} {currentUser?.lastName}
                     {currentUser?.role === 'ADMIN' && (
                       <span className="ml-2 text-xs bg-red-500 px-2 py-1 rounded">Admin</span>
                     )}
@@ -183,12 +165,12 @@ const NavBar = () => {
             )}
             <div className="flex items-center space-x-2 px-3 py-2">
               <Avatar 
-                firstName={firstName}
-                lastName={lastName}
+                firstName={currentUser?.firstName || ''}
+                lastName={currentUser?.lastName || ''}
                 size="sm"
               />
               <span className="text-gray-300">
-                {firstName} {lastName}
+                {currentUser?.firstName} {currentUser?.lastName}
                 {currentUser?.role === 'ADMIN' && (
                   <span className="ml-2 text-xs bg-red-500 px-2 py-1 rounded">Admin</span>
                 )}

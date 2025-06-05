@@ -9,6 +9,8 @@ const api = axios.create({
 export interface Employee {
   id: string | number;
   personalnummer: string;
+  firstName: string;
+  lastName: string;
   name: string;
   position: string;
   department: string;

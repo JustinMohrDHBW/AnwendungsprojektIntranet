@@ -24,6 +24,8 @@ router.get('/', async (req, res) => {
     const employees = users.map(user => ({
       id: user.id,
       personalnummer: user.personalnummer || `EMP${String(user.id).padStart(3, '0')}`,
+      firstName: user.firstName,
+      lastName: user.lastName,
       name: `${user.firstName} ${user.lastName}`,
       position: user.role === 'ADMIN' ? 'Administrator' : 'Employee',
       department: user.abteilung || 'Unassigned',
@@ -67,6 +69,8 @@ router.get('/search', async (req, res) => {
     const employees = users.map(user => ({
       id: user.id,
       personalnummer: user.personalnummer || `EMP${String(user.id).padStart(3, '0')}`,
+      firstName: user.firstName,
+      lastName: user.lastName,
       name: `${user.firstName} ${user.lastName}`,
       position: user.role === 'ADMIN' ? 'Administrator' : 'Employee',
       department: user.abteilung || 'Unassigned',
