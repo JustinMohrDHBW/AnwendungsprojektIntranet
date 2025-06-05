@@ -45,7 +45,11 @@ const IntraConnect: React.FC = () => {
     const loadEmployees = async () => {
       try {
         const data = await employeesApi.getEmployees();
-        setEmployees(data);
+        // Sort employees by lastName
+        const sortedEmployees = [...data].sort((a, b) => 
+          a.lastName.localeCompare(b.lastName)
+        );
+        setEmployees(sortedEmployees);
       } catch (err) {
         setError('Failed to load employees');
         console.error('Error loading employees:', err);
