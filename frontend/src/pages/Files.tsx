@@ -11,6 +11,7 @@ const Files: React.FC = () => {
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [searchCategory, setSearchCategory] = useState('');
   const [fileMetadata, setFileMetadata] = useState({
     description: '',
     category: '',
@@ -28,6 +29,24 @@ const Files: React.FC = () => {
     } catch (err) {
       setError('Failed to load files');
       console.error('Error loading files:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSearch = async () => {
+    if (!searchCategory.trim()) {
+      loadFiles();
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const searchResults = await fileApi.searchFiles(searchCategory);
+      setFiles(searchResults);
+    } catch (err) {
+      setError('Failed to search files');
+      console.error('Error searching files:', err);
     } finally {
       setIsLoading(false);
     }
@@ -124,6 +143,41 @@ const Files: React.FC = () => {
           {error}
         </div>
       )}
+
+      {/* Search Bar */}
+      <div className="mb-6">
+        <div className="flex gap-4">
+          <input
+            type="text"
+            placeholder="Search by category..."
+            value={searchCategory}
+            onChange={(e) => setSearchCategory(e.target.value)}
+            className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch();
+              }
+            }}
+          />
+          <button
+            onClick={handleSearch}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+          >
+            Search
+          </button>
+          {searchCategory && (
+            <button
+              onClick={() => {
+                setSearchCategory('');
+                loadFiles();
+              }}
+              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+      </div>
 
       {showUploadForm && (
         <form onSubmit={handleFileUpload} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-8">

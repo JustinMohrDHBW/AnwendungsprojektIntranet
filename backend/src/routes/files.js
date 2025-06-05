@@ -154,4 +154,37 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// Search files by category
+router.get('/search', authenticateToken, async (req, res) => {
+  const { category } = req.query;
+
+  try {
+    const files = await prisma.file.findMany({
+      where: {
+        category: {
+          contains: category,
+          mode: 'insensitive'
+        }
+      },
+      include: {
+        uploader: {
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+    res.json(files);
+  } catch (err) {
+    console.error('Error searching files:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 module.exports = router; 
