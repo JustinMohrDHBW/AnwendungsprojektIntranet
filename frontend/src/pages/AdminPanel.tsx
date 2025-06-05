@@ -10,6 +10,8 @@ const AdminPanel: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const loadUsers = async () => {
     try {
@@ -29,6 +31,34 @@ const AdminPanel: React.FC = () => {
   useEffect(() => {
     loadUsers();
   }, []);
+
+  const handleDeleteUser = async (userId: string) => {
+    if (!window.confirm('Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?')) {
+      return;
+    }
+
+    setDeleteError(null);
+    setIsDeleting(userId);
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/users/${userId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete user');
+      }
+
+      // Remove user from the list
+      setUsers(users.filter(user => user.id !== userId));
+    } catch (err) {
+      console.error('Error deleting user:', err);
+      setDeleteError('Failed to delete user. Please try again.');
+    } finally {
+      setIsDeleting(null);
+    }
+  };
 
   if (!currentUser || currentUser.role !== 'ADMIN') {
     return (
@@ -61,6 +91,12 @@ const AdminPanel: React.FC = () => {
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
+        </div>
+      )}
+
+      {deleteError && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {deleteError}
         </div>
       )}
 
@@ -143,10 +179,11 @@ const AdminPanel: React.FC = () => {
                         </button>
                         {user.role !== 'ADMIN' && (
                           <button 
-                            className="text-red-600 hover:text-red-900"
-                            onClick={() => {/* TODO: Implement delete user */}}
+                            className={`text-red-600 hover:text-red-900 ${isDeleting === user.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            onClick={() => handleDeleteUser(user.id)}
+                            disabled={isDeleting === user.id}
                           >
-                            Delete
+                            {isDeleting === user.id ? 'Deleting...' : 'Delete'}
                           </button>
                         )}
                       </td>
