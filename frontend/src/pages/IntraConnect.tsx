@@ -2,9 +2,11 @@ import React, { useState, useMemo, useEffect } from 'react';
 import * as employeesApi from '../api/employees';
 import type { Employee } from '../api/employees';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const IntraConnect: React.FC = () => {
   const { isLoggedIn, login } = useAuth();
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -34,27 +36,27 @@ const IntraConnect: React.FC = () => {
     }
   };
 
-  // Fetch employees data
   useEffect(() => {
-    const loadEmployees = async () => {
-      if (!isLoggedIn) {
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const data = await employeesApi.getEmployees();
-        setEmployees(data);
-      } catch (err) {
-        setError('Failed to load employees');
-        console.error('Error loading employees:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    // Redirect to homepage if already logged in
+    if (isLoggedIn) {
+      navigate('/');
+      return;
+    }
 
     loadEmployees();
-  }, [isLoggedIn]);
+  }, [isLoggedIn, navigate]);
+
+  const loadEmployees = async () => {
+    try {
+      const data = await employeesApi.getEmployees();
+      setEmployees(data);
+    } catch (err) {
+      setError('Failed to load employees');
+      console.error('Error loading employees:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Get unique departments for the dropdown
   const departments = useMemo(() => {

@@ -54,6 +54,9 @@ const NavBar = () => {
             {isLoggedIn ? (
               <>
                 <Link to="/" className={linkClasses("/")}>
+                  Home
+                </Link>
+                <Link to="/intraconnect" className={linkClasses("/intraconnect")}>
                   IntraConnect
                 </Link>
                 <Link to="/blog" className={linkClasses("/blog")}>
@@ -143,6 +146,12 @@ const NavBar = () => {
             <Link
               to="/"
               className={linkClasses("/")}
+            >
+              Home
+            </Link>
+            <Link
+              to="/intraconnect"
+              className={linkClasses("/intraconnect")}
             >
               IntraConnect
             </Link>
