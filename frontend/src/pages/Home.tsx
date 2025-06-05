@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import OrganizationalChart from '../components/OrganizationalChart';
 
 const Home: React.FC = () => {
   const { currentUser } = useAuth();
@@ -150,6 +151,11 @@ const Home: React.FC = () => {
             </p>
           </div>
         </Link>
+      </div>
+
+      {/* Organizational Chart */}
+      <div className="mb-8">
+        <OrganizationalChart />
       </div>
 
       {/* Company Values */}
