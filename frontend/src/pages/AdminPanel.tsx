@@ -21,7 +21,18 @@ const AdminPanel: React.FC = () => {
         credentials: 'include'
       });
       const data = await response.json();
-      setUsers(data);
+      
+      // Sort users by role (ADMIN first) and then by lastName
+      const sortedUsers = [...data].sort((a, b) => {
+        // First sort by role
+        if (a.role === 'ADMIN' && b.role !== 'ADMIN') return -1;
+        if (a.role !== 'ADMIN' && b.role === 'ADMIN') return 1;
+        
+        // Then sort by lastName
+        return a.lastName.localeCompare(b.lastName);
+      });
+      
+      setUsers(sortedUsers);
     } catch (err) {
       setError('Failed to load users');
       console.error('Error loading users:', err);
