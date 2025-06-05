@@ -14,6 +14,7 @@ const AdminPanel: React.FC = () => {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
   const loadUsers = async () => {
     try {
@@ -44,6 +45,22 @@ const AdminPanel: React.FC = () => {
   useEffect(() => {
     loadUsers();
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollButton(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   const handleDeleteUser = async (userId: string) => {
     if (!window.confirm('Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?')) {
@@ -76,6 +93,7 @@ const AdminPanel: React.FC = () => {
   const handleEditUser = (user: User) => {
     setEditingUser(user);
     setShowCreateForm(false);
+    scrollToTop();
   };
 
   const handleUserUpdated = () => {
@@ -253,6 +271,30 @@ const AdminPanel: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Scroll to Top Button */}
+      {showScrollButton && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors"
+          aria-label="Scroll to top"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 10l7-7m0 0l7 7m-7-7v18"
+            />
+          </svg>
+        </button>
+      )}
     </div>
   );
 };
