@@ -111,9 +111,19 @@ const Home: React.FC = () => {
 
       {/* Quick Access Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        <Link to="/intraconnect" className="transform hover:scale-105 transition-transform">
+        <Link to="/departments" className="transform hover:scale-105 transition-transform">
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="text-blue-600 text-2xl mb-4">👥</div>
+            <h2 className="text-xl font-semibold mb-2">Departments</h2>
+            <p className="text-gray-600">
+              Explore our company structure and team organization.
+            </p>
+          </div>
+        </Link>
+
+        <Link to="/intraconnect" className="transform hover:scale-105 transition-transform">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="text-purple-600 text-2xl mb-4">📇</div>
             <h2 className="text-xl font-semibold mb-2">Employee Directory</h2>
             <p className="text-gray-600">
               Connect with your colleagues and find contact information.
@@ -133,7 +143,7 @@ const Home: React.FC = () => {
 
         <Link to="/blog" className="transform hover:scale-105 transition-transform">
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="text-purple-600 text-2xl mb-4">📝</div>
+            <div className="text-orange-600 text-2xl mb-4">📝</div>
             <h2 className="text-xl font-semibold mb-2">Company Blog</h2>
             <p className="text-gray-600">
               Stay updated with the latest news and announcements.
