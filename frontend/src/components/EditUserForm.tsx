@@ -26,6 +26,15 @@ interface UserFormData {
   phone: string;
 }
 
+interface UpdateUserData {
+  firstName: string;
+  lastName: string;
+  username: string;
+  password?: string;
+  abteilung: string;
+  phone?: string | null;
+}
+
 const EditUserForm: React.FC<EditUserFormProps> = ({ user, onUserUpdated, onCancel }) => {
   const [formData, setFormData] = useState<UserFormData>({
     firstName: user.firstName,
@@ -33,7 +42,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onUserUpdated, onCanc
     username: user.username,
     password: '',
     abteilung: user.abteilung || '',
-    phone: user.phone || ''
+    phone: user.phone ?? ''
   });
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [error, setError] = useState<string | null>(null);
@@ -116,12 +125,12 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onUserUpdated, onCanc
     setIsLoading(true);
 
     try {
-      const dataToSubmit: Partial<UserFormData> = {
+      const dataToSubmit: UpdateUserData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         username: formData.username,
         abteilung: formData.abteilung,
-        phone: formData.phone || undefined
+        phone: formData.phone.trim() || null
       };
 
       // Only include password if it was changed
