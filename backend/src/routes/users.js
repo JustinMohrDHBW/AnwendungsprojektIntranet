@@ -24,12 +24,71 @@ router.get('/', isAdmin, async (req, res) => {
         role: true,
         personalnummer: true,
         abteilung: true,
-        createdAt: true,
-      },
+        phone: true,
+      }
     });
     res.json(users);
   } catch (err) {
     console.error('Error fetching users:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create new user
+router.post('/', isAdmin, async (req, res) => {
+  try {
+    const {
+      username,
+      password,
+      firstName,
+      lastName,
+      role,
+      personalnummer,
+      abteilung,
+      phone
+    } = req.body;
+
+    // Validate required fields
+    if (!username || !password || !firstName || !lastName) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Check if username already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { username }
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ error: 'Username already exists' });
+    }
+
+    // Create new user
+    const newUser = await prisma.user.create({
+      data: {
+        username,
+        password, // In a real application, this should be hashed
+        firstName,
+        lastName,
+        role: role || 'USER',
+        personalnummer,
+        abteilung,
+        phone
+      },
+      select: {
+        id: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        personalnummer: true,
+        abteilung: true,
+        phone: true,
+      }
+    });
+
+    res.status(201).json(newUser);
+  } catch (err) {
+    console.error('Error creating user:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -82,6 +141,38 @@ router.delete('/:id', isAdmin, async (req, res) => {
     res.status(204).send();
   } catch (err) {
     console.error('Error deleting user:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get next available personnel number
+router.get('/next-personnel-number', isAdmin, async (req, res) => {
+  try {
+    // Get the highest personnel number
+    const lastUser = await prisma.user.findFirst({
+      where: {
+        personalnummer: {
+          startsWith: 'E'
+        }
+      },
+      orderBy: {
+        personalnummer: 'desc'
+      }
+    });
+
+    let nextNumber;
+    if (!lastUser || !lastUser.personalnummer) {
+      // If no users exist with personnel numbers, start with E001
+      nextNumber = 'E001';
+    } else {
+      // Extract the number part and increment it
+      const currentNumber = parseInt(lastUser.personalnummer.substring(1));
+      nextNumber = `E${String(currentNumber + 1).padStart(3, '0')}`;
+    }
+
+    res.json({ nextPersonnelNumber: nextNumber });
+  } catch (err) {
+    console.error('Error generating next personnel number:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

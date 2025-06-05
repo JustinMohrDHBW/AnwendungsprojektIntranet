@@ -60,7 +60,7 @@ export const downloadFile = async (id: string): Promise<Blob> => {
     responseType: 'blob',
   });
   return response.data;
-};
+}; 
 
 export const searchFiles = async (category: string): Promise<File[]> => {
   const response = await api.get('/api/files/search', {

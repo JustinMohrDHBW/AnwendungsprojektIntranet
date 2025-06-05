@@ -246,9 +246,13 @@ const IntraConnect: React.FC = () => {
               </p>
               <p className="text-gray-600">
                 <span className="font-medium">Telefon:</span>{' '}
-                <a href={`tel:${employee.phone}`} className="text-blue-600 hover:underline">
-                  {employee.phone}
-                </a>
+                {employee.phone === 'Keine Telefonnummer hinterlegt' ? (
+                  <span className="text-gray-500 italic">{employee.phone}</span>
+                ) : (
+                  <a href={`tel:${employee.phone}`} className="text-blue-600 hover:underline">
+                    {employee.phone}
+                  </a>
+                )}
               </p>
             </div>
           </div>

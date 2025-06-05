@@ -2,29 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import type { User } from '../api/auth';
 import * as authApi from '../api/auth';
+import CreateUserForm from '../components/CreateUserForm';
 
 const AdminPanel: React.FC = () => {
   const { currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
+  const loadUsers = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/users`, {
+        credentials: 'include'
+      });
+      const data = await response.json();
+      setUsers(data);
+    } catch (err) {
+      setError('Failed to load users');
+      console.error('Error loading users:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/users`, {
-          credentials: 'include'
-        });
-        const data = await response.json();
-        setUsers(data);
-      } catch (err) {
-        setError('Failed to load users');
-        console.error('Error loading users:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadUsers();
   }, []);
 
@@ -46,11 +48,28 @@ const AdminPanel: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Admin Panel</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Admin Panel</h1>
+        <button
+          onClick={() => setShowCreateForm(!showCreateForm)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+        >
+          {showCreateForm ? 'Hide Form' : 'Add New User'}
+        </button>
+      </div>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
+        </div>
+      )}
+
+      {showCreateForm && (
+        <div className="mb-8">
+          <CreateUserForm onUserCreated={() => {
+            loadUsers();
+            setShowCreateForm(false);
+          }} />
         </div>
       )}
 
@@ -77,6 +96,9 @@ const AdminPanel: React.FC = () => {
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Department
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Phone
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
@@ -108,6 +130,9 @@ const AdminPanel: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {user.abteilung || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {user.phone || '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button 

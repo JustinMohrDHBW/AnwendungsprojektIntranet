@@ -15,7 +15,8 @@ async function main() {
       lastName: 'Mohr',
       role: Role.ADMIN,
       personalnummer: 'A001',
-      abteilung: 'Management'
+      abteilung: 'Management',
+      phone: '+49 176 1234567'
     },
     {
       username: 'john-doe',
@@ -24,7 +25,8 @@ async function main() {
       lastName: 'Doe',
       role: Role.USER,
       personalnummer: 'E001',
-      abteilung: 'Development'
+      abteilung: 'Development',
+      phone: '+49 176 2345678'
     },
     {
       username: 'emma-schmidt',
@@ -33,7 +35,8 @@ async function main() {
       lastName: 'Schmidt',
       role: Role.USER,
       personalnummer: 'E002',
-      abteilung: 'Design'
+      abteilung: 'Design',
+      phone: '+49 176 3456789'
     },
     {
       username: 'max-mueller',
@@ -42,7 +45,8 @@ async function main() {
       lastName: 'Müller',
       role: Role.USER,
       personalnummer: 'E003',
-      abteilung: 'Marketing'
+      abteilung: 'Marketing',
+      phone: '+49 176 4567890'
     },
     {
       username: 'laura-wagner',
@@ -51,7 +55,8 @@ async function main() {
       lastName: 'Wagner',
       role: Role.USER,
       personalnummer: 'E004',
-      abteilung: 'Sales'
+      abteilung: 'Sales',
+      phone: '+49 176 5678901'
     },
     {
       username: 'thomas-weber',
@@ -60,7 +65,8 @@ async function main() {
       lastName: 'Weber',
       role: Role.USER,
       personalnummer: 'E005',
-      abteilung: 'Development'
+      abteilung: 'Development',
+      phone: '+49 176 6789012'
     },
     {
       username: 'anna-becker',
@@ -69,7 +75,8 @@ async function main() {
       lastName: 'Becker',
       role: Role.USER,
       personalnummer: 'E006',
-      abteilung: 'HR'
+      abteilung: 'HR',
+      phone: '+49 176 7890123'
     },
     {
       username: 'michael-klein',
@@ -78,7 +85,8 @@ async function main() {
       lastName: 'Klein',
       role: Role.USER,
       personalnummer: 'E007',
-      abteilung: 'Finance'
+      abteilung: 'Finance',
+      phone: '+49 176 8901234'
     },
     {
       username: 'sarah-wolf',
@@ -87,7 +95,8 @@ async function main() {
       lastName: 'Wolf',
       role: Role.USER,
       personalnummer: 'E008',
-      abteilung: 'Design'
+      abteilung: 'Design',
+      phone: '+49 176 9012345'
     },
     {
       username: 'david-fischer',
@@ -96,7 +105,8 @@ async function main() {
       lastName: 'Fischer',
       role: Role.USER,
       personalnummer: 'E009',
-      abteilung: 'Development'
+      abteilung: 'Development',
+      phone: '+49 176 0123456'
     }
   ]
 

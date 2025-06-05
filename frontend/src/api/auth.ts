@@ -8,6 +8,7 @@ export interface User {
   role: 'ADMIN' | 'USER';
   personalnummer?: string;
   abteilung?: string;
+  phone?: string;
   employeeData?: {
     personalnummer: string;
     name: string;

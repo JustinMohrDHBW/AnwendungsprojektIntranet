@@ -16,6 +16,7 @@ router.get('/', async (req, res) => {
         role: true,
         personalnummer: true,
         abteilung: true,
+        phone: true,
       }
     });
 
@@ -27,7 +28,7 @@ router.get('/', async (req, res) => {
       position: user.role === 'ADMIN' ? 'Administrator' : 'Employee',
       department: user.abteilung || 'Unassigned',
       email: `${user.username}@company.com`,
-      phone: '+49 123 456789' // You might want to add a phone field to your user model
+      phone: user.phone || 'Keine Telefonnummer hinterlegt'
     }));
 
     res.json(employees);
@@ -59,6 +60,7 @@ router.get('/search', async (req, res) => {
         role: true,
         personalnummer: true,
         abteilung: true,
+        phone: true,
       }
     });
 
@@ -69,7 +71,7 @@ router.get('/search', async (req, res) => {
       position: user.role === 'ADMIN' ? 'Administrator' : 'Employee',
       department: user.abteilung || 'Unassigned',
       email: `${user.username}@company.com`,
-      phone: '+49 123 456789'
+      phone: user.phone || 'Keine Telefonnummer hinterlegt'
     }));
 
     res.json(employees);

@@ -36,6 +36,7 @@ model User {
   // Employee data
   personalnummer String?
   abteilung      String?
+  phone          String?  @default("+49")
 
   // Relations
   posts     BlogPost[]
