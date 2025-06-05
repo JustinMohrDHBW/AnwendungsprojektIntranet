@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import * as employeesApi from '../api/employees';
 import type { Employee } from '../api/employees';
 
 interface DepartmentNode {
   name: string;
   icon: string;
-  teamSize?: number;
   children?: DepartmentNode[];
 }
 
@@ -61,15 +60,18 @@ const OrganizationalChart: React.FC = () => {
     loadEmployees();
   }, []);
 
+  // Calculate team sizes dynamically
+  const getDepartmentSize = (deptName: string) => {
+    return employees.filter(emp => emp.department === deptName).length;
+  };
+
   const departments: DepartmentNode = {
     name: 'Management',
     icon: '👔',
-    teamSize: 1,
     children: [
       {
-        name: 'Software Development',
+        name: 'Development',
         icon: '💻',
-        teamSize: 3,
         children: []
       },
       {
@@ -79,29 +81,25 @@ const OrganizationalChart: React.FC = () => {
           {
             name: 'UX Design',
             icon: '🎨',
-            teamSize: 2
+            children: []
           }
         ]
       },
       {
         name: 'Marketing',
-        icon: '📢',
-        teamSize: 1
+        icon: '📢'
       },
       {
         name: 'Sales',
-        icon: '🤝',
-        teamSize: 1
+        icon: '🤝'
       },
       {
         name: 'HR',
-        icon: '👥',
-        teamSize: 1
+        icon: '👥'
       },
       {
         name: 'Finance',
-        icon: '💰',
-        teamSize: 1
+        icon: '💰'
       }
     ]
   };
@@ -111,6 +109,8 @@ const OrganizationalChart: React.FC = () => {
   };
 
   const renderDepartment = (dept: DepartmentNode, level: number = 0) => {
+    const teamSize = getDepartmentSize(dept.name);
+    
     return (
       <div
         key={dept.name}
@@ -134,11 +134,9 @@ const OrganizationalChart: React.FC = () => {
         >
           <div className="text-xl mb-1">{dept.icon}</div>
           <div className="font-semibold text-sm">{dept.name}</div>
-          {dept.teamSize && (
-            <div className="text-xs text-gray-600">
-              {dept.teamSize} Team Member{dept.teamSize !== 1 ? 's' : ''}
-            </div>
-          )}
+          <div className="text-xs text-gray-600">
+            {teamSize} Team Member{teamSize !== 1 ? 's' : ''}
+          </div>
         </div>
         
         {dept.children && dept.children.length > 0 && (

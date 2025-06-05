@@ -155,10 +155,10 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onUserUpdated, onCanc
 
   const departments = [
     'Management',
-    'Software Development',
+    'Development',
     'Product',
-    'Marketing',
     'UX Design',
+    'Marketing',
     'Sales',
     'HR',
     'Finance'

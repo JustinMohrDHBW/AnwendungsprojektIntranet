@@ -182,10 +182,10 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onUserCreated }) => {
 
   const departments = [
     'Management',
-    'Software Development',
+    'Development',
     'Product',
-    'Marketing',
     'UX Design',
+    'Marketing',
     'Sales',
     'HR',
     'Finance'
