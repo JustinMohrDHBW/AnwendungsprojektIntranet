@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import type { User } from '../api/auth';
 import * as authApi from '../api/auth';
 import CreateUserForm from '../components/CreateUserForm';
+import EditUserForm from '../components/EditUserForm';
 
 const AdminPanel: React.FC = () => {
   const { currentUser } = useAuth();
@@ -12,6 +13,7 @@ const AdminPanel: React.FC = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
 
   const loadUsers = async () => {
     try {
@@ -60,6 +62,16 @@ const AdminPanel: React.FC = () => {
     }
   };
 
+  const handleEditUser = (user: User) => {
+    setEditingUser(user);
+    setShowCreateForm(false);
+  };
+
+  const handleUserUpdated = () => {
+    loadUsers();
+    setEditingUser(null);
+  };
+
   if (!currentUser || currentUser.role !== 'ADMIN') {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -80,12 +92,14 @@ const AdminPanel: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Admin Panel</h1>
-        <button
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-        >
-          {showCreateForm ? 'Hide Form' : 'Add New User'}
-        </button>
+        {!editingUser && (
+          <button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+          >
+            {showCreateForm ? 'Hide Form' : 'Add New User'}
+          </button>
+        )}
       </div>
 
       {error && (
@@ -100,7 +114,17 @@ const AdminPanel: React.FC = () => {
         </div>
       )}
 
-      {showCreateForm && (
+      {editingUser && (
+        <div className="mb-8">
+          <EditUserForm
+            user={editingUser}
+            onUserUpdated={handleUserUpdated}
+            onCancel={() => setEditingUser(null)}
+          />
+        </div>
+      )}
+
+      {showCreateForm && !editingUser && (
         <div className="mb-8">
           <CreateUserForm onUserCreated={() => {
             loadUsers();
@@ -173,7 +197,7 @@ const AdminPanel: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button 
                           className="text-indigo-600 hover:text-indigo-900 mr-4"
-                          onClick={() => {/* TODO: Implement edit user */}}
+                          onClick={() => handleEditUser(user)}
                         >
                           Edit
                         </button>

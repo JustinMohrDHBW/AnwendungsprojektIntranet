@@ -42,17 +42,17 @@ const IntraConnect: React.FC = () => {
     loadEmployees();
   }, []);
 
-  const loadEmployees = async () => {
-    try {
-      const data = await employeesApi.getEmployees();
-      setEmployees(data);
-    } catch (err) {
-      setError('Failed to load employees');
-      console.error('Error loading employees:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const loadEmployees = async () => {
+      try {
+        const data = await employeesApi.getEmployees();
+        setEmployees(data);
+      } catch (err) {
+        setError('Failed to load employees');
+        console.error('Error loading employees:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
   // Get unique departments for the dropdown
   const departments = useMemo(() => {
@@ -249,9 +249,9 @@ const IntraConnect: React.FC = () => {
                 {employee.phone === 'Keine Telefonnummer hinterlegt' ? (
                   <span className="text-gray-500 italic">{employee.phone}</span>
                 ) : (
-                  <a href={`tel:${employee.phone}`} className="text-blue-600 hover:underline">
-                    {employee.phone}
-                  </a>
+                <a href={`tel:${employee.phone}`} className="text-blue-600 hover:underline">
+                  {employee.phone}
+                </a>
                 )}
               </p>
             </div>

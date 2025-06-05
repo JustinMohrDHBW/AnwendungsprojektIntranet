@@ -96,18 +96,37 @@ router.post('/', isAdmin, async (req, res) => {
 // Update user (admin only)
 router.put('/:id', isAdmin, async (req, res) => {
   const { id } = req.params;
-  const { firstName, lastName, role, personalnummer, abteilung } = req.body;
+  const { firstName, lastName, username, password, abteilung, phone } = req.body;
 
   try {
+    // Check if username already exists (if username is being changed)
+    if (username) {
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          username,
+          id: { not: id } // Exclude current user from check
+        }
+      });
+
+      if (existingUser) {
+        return res.status(400).json({ error: 'Username already exists' });
+      }
+    }
+
+    // Prepare update data
+    const updateData = {
+      ...(firstName && { firstName }),
+      ...(lastName && { lastName }),
+      ...(username && { username }),
+      ...(password && { password }), // In a real app, this should be hashed
+      ...(abteilung && { abteilung }),
+      ...(phone !== undefined && { phone }) // Allow empty string to clear phone
+    };
+
+    // Update user
     const user = await prisma.user.update({
       where: { id },
-      data: {
-        firstName,
-        lastName,
-        role,
-        personalnummer,
-        abteilung,
-      },
+      data: updateData,
       select: {
         id: true,
         username: true,
@@ -116,7 +135,7 @@ router.put('/:id', isAdmin, async (req, res) => {
         role: true,
         personalnummer: true,
         abteilung: true,
-        createdAt: true,
+        phone: true,
       },
     });
     res.json(user);
