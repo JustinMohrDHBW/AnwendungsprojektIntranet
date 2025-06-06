@@ -8,7 +8,7 @@ const Home: React.FC = () => {
 
   const companyStats = [
     { label: 'Founded', value: '2021' },
-    { label: 'Employees', value: '35' },
+    { label: 'Employees', value: '30+' },
     { label: 'Locations', value: '2' },
     { label: 'Clients', value: '20+' }
   ];
@@ -23,7 +23,7 @@ const Home: React.FC = () => {
     {
       city: 'Berlin',
       address: 'Factory Berlin - Rheinsberger Str. 76/77',
-      employees: 10,
+      employees: 8,
       departments: ['Software Development', 'UX Design', 'Sales']
     }
   ];
